@@ -109,7 +109,7 @@ class NewestData: ObservableObject {
         
         let session = URLSession(configuration: config)
 
-        let url = URL(string: "https://opendata.maryland.gov/resource/mgd3-qk8t.json?filter=l")!
+        let url = URL(string: "https://opendata.maryland.gov/resource/mgd3-qk8t.json?filter=c")!
         
         // This URL IS FOR SPECEIF NEWEST DATA https://opendata.maryland.gov/resource/mgd3-qk8t.json?filter=jb
         let task = session.dataTask(with: url) { data, response, error in
@@ -147,7 +147,7 @@ class NewestData: ObservableObject {
           
               
                 
-                print(self.recentMDHeader[0].bedsicu)
+             //   print(self.recentMDHeader[0].bedsicu)
               
 
             } catch let jsonError {
@@ -381,6 +381,82 @@ class AllCombinedLivingModel: ObservableObject {
 
 
                 print(self.recentLivingCases?.features?[346].attributes?.Baltimore)
+
+
+            } catch let jsonError {
+
+                print("Decoding failed for UserDetails", jsonError)
+        }
+            }
+
+            
+        }
+        
+
+        // execute the HTTP request
+        task.resume()
+
+    }
+}
+class VaccineLocationsModel: ObservableObject {
+   
+    
+    @Published var vaccineLocationsMD: MDVaccineLocations?
+  
+  
+
+    
+
+                        
+    
+   
+    
+    init() {
+       
+        let config = URLSessionConfiguration.default
+      
+        config.httpAdditionalHeaders = ["x-rapidapi-key" : "0d5ce136acmsha0935b31dcc0e53p15e7b1jsn99349520e7b2"]
+        
+        let session = URLSession(configuration: config)
+
+        let url = URL(string: "https://services.arcgis.com/njFNhDsUCentVYJW/arcgis/rest/services/MD_Vaccination_Locations/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json")!
+        
+        // This URL IS FOR SPECEIF NEWEST DATA https://opendata.maryland.gov/resource/mgd3-qk8t.json?filter=jb
+        let task = session.dataTask(with: url) { data, response, error in
+            
+            
+
+            // ensure there is no error for this HTTP response
+            guard error == nil else {
+                print ("error: \(error!)")
+                return
+            }
+            
+            // ensure there is data returned from this HTTP response
+            guard let data = data else {
+                print("No data")
+                return
+            }
+            
+            // Parse JSON into newJSON struct using JSONDecoder
+//            guard let locationVaccine = try? JSONDecoder().decode(MDVaccineLocations.self, from: data) else {
+//               print("Error: Couldn't decode data into all data in MD Info")
+//               return
+//             }
+////
+//            print("gotten json response dictionary is \n \(locationVaccine)")
+            // update UI using the response here
+
+            DispatchQueue.main.async {
+
+            do {
+
+                self.vaccineLocationsMD = try JSONDecoder().decode(MDVaccineLocations?.self, from: data)
+
+
+
+
+                print(self.vaccineLocationsMD?.features?[0].geometry?.coordinate)
 
 
             } catch let jsonError {
